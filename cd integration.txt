@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - name: Checkout Code
+      - name: Checkout repo
         uses: actions/checkout@v3
 
       - name: Setup Node.js
@@ -43,12 +43,19 @@ jobs:
       - name: Build Project
         run: npm run build
 
+      - name: Upload production-ready build files
+        uses: actions/upload-artifact@v2
+        with:
+          name: production-files
+          path: ./build
+
 deploy:
-  runs-on: ubuntu-latest
+  name: Deploy
   needs: build
+  runs-on: ubuntu-22.04
 
   steps:
-    - name: Deploy to Server
+    - name: Deploy to Github Pages
       run: echo "Deploying the project!"
 
  
