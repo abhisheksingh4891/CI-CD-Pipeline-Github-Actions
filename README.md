@@ -70,12 +70,16 @@ deploy:
 -- In the "compare" dropdown, select the master branch (this is the branch you're merging from).
 
 3.2 -- Review the Changes
+
 3.3 -- Create the Pull Request
 -- Once you're ready, click the Create Pull Request button.
 -- Fill in a title and description for your pull request (optional).
 -- You can assign reviewers if you want others to approve the changes.
+
 3.4 -- Resolve Conflicts (If Any)
+
 3.5 -- Merge the Pull Request
+
 3.6 -- Update Your Local Repositories
 -- After merging the PR, make sure you pull the latest changes from main into your local repositories:
 ##
