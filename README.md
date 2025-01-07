@@ -1,40 +1,120 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+1 -- clone github repo
+git clone <repository_url>
+cd <repository_name>
 
-## Getting Started
+2 -- Add a GitHub Actions Workflow and steps are
+2.1 -- Create the workflow folder
+mkdir .github/workflows
 
-First, run the development server:
+2.2 -- Create a workflow YAML file
+echo. > .github\workflows\ci-cd.yml --- for windows
+touch .github/workflows/ci-cd.yml  --- for linux/unix
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+2.3 -- add sample line of workflow in .yml created
+name: CI/CD Pipeline
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+jobs:
+  build:
+    runs-on: ubuntu-22.04
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+      - name: Install Dependencies
+        run: npm install
 
-## Learn More
+      - name: Run Tests
+        run: npm test
 
-To learn more about Next.js, take a look at the following resources:
+      - name: Build Project
+        run: npm run build
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
+      - name: Upload production-ready build files
+        uses: actions/upload-artifact@v2
+        with:
+          name: production-files
+          path: ./build
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+deploy:
+  name: Deploy
+  needs: build
+  runs-on: ubuntu-22.04
 
-## Deploy on Vercel
+  steps:
+    - name: Deploy to Github Pages
+      run: echo "Deploying the project!"
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+ 
+2.4 -- then push the code to git repo
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+
+### new workflow
+
+name: Build & Deploy
+
+on:
+  push:
+    branches:
+      - main
+      
+env:
+  CI: false
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Install dependencies
+        uses: npm install
+
+      - name: Build project
+        run: npm run build
+
+      - name: Upload production-ready build files
+        uses: actions/upload-artifact@v3
+        with:
+          name: production-files
+          path: ./build
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: production-files
+          path: ./build
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.TOKEN }}
+          publish_dir: ./build
