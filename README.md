@@ -3,6 +3,7 @@ git clone <repository_url>
 cd <repository_name>
 
 2 -- Add a GitHub Actions Workflow and steps are
+
 2.1 -- Create the workflow folder
 ##
 mkdir .github/workflows
