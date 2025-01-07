@@ -1,11 +1,7 @@
- 
 name: CI/CD Pipeline
 
 on:
   push:
-    branches:
-      - main
-  pull_request:
     branches:
       - main
 
@@ -20,7 +16,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "22"
+          node-version: "18"
 
       - name: Install Dependencies
         run: npm install
@@ -31,11 +27,14 @@ jobs:
       - name: Build Project
         run: npm run build
 
+      - name: List build files
+        run: ls -R .next
+
       - name: Upload production-ready build files
         uses: actions/upload-artifact@v3
         with:
           name: production-files
-          path: ./out ## .next for next.js project and .build for react project
+          path: ./.next
 
   deploy:
     name: Deploy
@@ -47,10 +46,10 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: production-files
-          path: ./out ## .next for next.js project and .build for react project
+          path: ./.next
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.TOKEN }}
-          publish_dir: ./out  ## .next for next.js project and .build for react project
+          publish_dir: ./.next
