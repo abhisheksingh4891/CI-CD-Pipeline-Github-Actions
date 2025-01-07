@@ -27,20 +27,11 @@ jobs:
       - name: Build Project
         run: npm run build
 
-      - name: Debug Working Directory
-        run: ls -alh
-
-      - name: Debug .next Directory
-        run: ls -R .next || echo ".next directory not found"
-
-      - name: Debug Out Directory
-        run: ls -R out || echo "out directory not found"
-
       - name: Upload production-ready build files
         uses: actions/upload-artifact@v3
         with:
           name: production-files
-          path: ./.next
+          path: /.next
 
   deploy:
     name: Deploy
@@ -52,10 +43,10 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: production-files
-          path: ./.next
+          path: /.next
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.TOKEN }}
-          publish_dir: ./.next
+          publish_dir: /.next

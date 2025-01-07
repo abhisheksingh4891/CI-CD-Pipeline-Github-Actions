@@ -94,6 +94,15 @@ jobs:
       - name: Build project
         run: npm run build
 
+      - name: Debug Working Directory
+        run: ls -alh
+
+      - name: Debug .next Directory
+        run: ls -R .next || echo ".next directory not found"
+
+      - name: Debug Out Directory
+        run: ls -R out || echo "out directory not found"
+
       - name: Upload production-ready build files
         uses: actions/upload-artifact@v3
         with:
