@@ -1,0 +1,59 @@
+1 -- clone github repo
+git clone <repository_url>
+cd <repository_name>
+
+2 -- Add a GitHub Actions Workflow and steps are
+2.1 -- Create the workflow folder
+mkdir .github/workflows
+
+2.2 -- Create a workflow YAML file
+echo. > .github\workflows\ci-cd.yml --- for windows
+touch .github/workflows/ci-cd.yml  --- for linux/unix
+
+2.3 -- add sample line of workflow in .yml created
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run Tests
+        run: npm test
+
+      - name: Build Project
+        run: npm run build
+
+deploy:
+  runs-on: ubuntu-latest
+  needs: build
+
+  steps:
+    - name: Deploy to Server
+      run: echo "Deploying the project!"
+
+ 
+2.4 -- then push the code to git repo
+
+
+
+
